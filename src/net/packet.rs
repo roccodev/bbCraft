@@ -1,8 +1,8 @@
 use std::net::TcpStream;
-use std::io::Read;
+use std::io::{Read, Write};
 use std::fs::read;
-use mc_varint::{VarIntRead};
-use byteorder::{ReadBytesExt, BigEndian};
+use mc_varint::{VarIntRead, VarIntWrite};
+use byteorder::{ReadBytesExt, BigEndian, WriteBytesExt};
 use crate::net::connection::Connection;
 
 pub struct PacketInfo {
@@ -35,7 +35,25 @@ impl Packet {
         })
     }
 
-    pub fn new_from_data(packet_id: i32, data: &Vec<u8>) -> Result<Packet, std::io::Error> {
+    pub fn new_from_data(packet_id: i32, data: Vec<u8>) -> Packet {
+        let size = data.len() + 1;
+        let info = PacketInfo {length: size, id: packet_id};
 
+        Packet { info, bytes: data }
+    }
+
+    pub fn write(&mut self, connection: &mut Connection) -> Result<(), std::io::Error> {
+        let mut stream = &connection.stream;
+        stream.write_var_i32(self.info.length as i32)?;
+
+        if self.info.id == 0 {
+            stream.write(&[0u8]);
+        }
+        else {
+            stream.write_var_i32(self.info.id)?;
+        }
+
+        let mut bytes = &mut self.bytes;
+        stream.write_all(&*bytes)
     }
 }

@@ -5,7 +5,7 @@ use super::io::read::MinecraftReader;
 use mc_varint::{VarIntRead};
 use byteorder::{ReadBytesExt, BigEndian};
 use super::packet::{PacketInfo, Packet};
-use crate::net::handshake::HandshakePacket;
+use crate::net::handshake::{HandshakePacket, LoginPacket};
 use crate::net::packet::PacketHandler;
 
 #[derive(Debug)]
@@ -37,30 +37,34 @@ impl Connection {
     }
 
     pub fn listen(&mut self) {
-        println!("Got a new connection :)");
         loop {
             if !self.alive {
-                println!("Disconnected!");
                 break;
             }
 
             let packet = Packet::new(&mut self.stream);
             match packet {
                 Ok(packet) => {
-                    println!("Received packet with ID {} and length {}. Contents: {:?}",
-                             packet.info.id, packet.info.length, packet.bytes);
 
                     match packet.info.id {
                         0x0 => {
-                            if let State::HANDSHAKE = &self.state {
-                                HandshakePacket {packet: &packet}.handle(self);
+                            match self.state {
+                                State::HANDSHAKE => {
+                                    HandshakePacket {packet: &packet}.handle(self);
+                                },
+                                State::LOGIN => {
+                                    LoginPacket {packet: &packet}.handle(self);
+                                },
+                                _ => {}
                             }
                         }
                         _ => {}
                     }
 
                 }
-                Err(error) => panic!(error)
+                Err(error) => {
+                    self.disconnect();
+                }
             }
 
         }
