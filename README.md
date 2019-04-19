@@ -6,7 +6,7 @@
 -->
 
 # bbCraft
-[![Build status](https://api.travis-ci.com/RoccoDev/bbCraft.svg?branch=master)](https://travis.ci/RoccoDev/bbCraft)
+[![Build status](https://api.travis-ci.org/RoccoDev/bbCraft.svg?branch=master)](https://travis-ci.org/RoccoDev/bbCraft)
 
 A barebones Minecraft server, written in Rust.  
 
