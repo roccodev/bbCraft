@@ -5,11 +5,4 @@ os:
   - windows
   - osx
 
-matrix:
-  include:
-    - os: linux
-      script: sh build.sh
-    - os: osx
-      script: sh build.sh
-    - os: windows
-      script: build.bat
+script: sh build.sh
