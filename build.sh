@@ -9,7 +9,11 @@ cargo build --release
 cd ..
 
 # Move the library to the lib folder
-mv rust-examples/target/release/* server/mc_server_impl/lib
+mkdir server/mc_server_impl/lib
+cd rust-examples/target/release/
+mv server.dll.lib server.lib
+mv *.{lib,dylib,so} ../../../server/mc_server_impl/lib
+cd ../../../
 
 # Move the main executable
 cd server/mc_server_impl
