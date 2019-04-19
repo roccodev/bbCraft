@@ -27,6 +27,7 @@ mkdir output
 mv server/mc_server_impl/target/release/bbcraft.exe output # Windows
 mv server/mc_server_impl/target/release/bbcraft output # MacOS/Linux
 mv server/mc_server_impl/lib/* output
+cp server/mc_server_impl/res/* output
 cp LICENSE output
 
 cd output
