@@ -12,7 +12,9 @@ cd ..
 mkdir server/mc_server_impl/lib
 cd rust-examples/target/release/
 mv server.dll.lib server.lib
-mv *.{lib,dylib,so} ../../../server/mc_server_impl/lib
+mv *.lib ../../../server/mc_server_impl/lib
+mv *.dylib ../../../server/mc_server_impl/lib
+mv *.so ../../../server/mc_server_impl/lib
 cd ../../../
 
 # Move the main executable
