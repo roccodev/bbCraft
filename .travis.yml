@@ -5,4 +5,4 @@ os:
   - windows
   - osx
 
-script: build.sh
+script: sh build.sh
