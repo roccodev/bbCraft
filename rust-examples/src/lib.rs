@@ -1,3 +1,8 @@
+// Copyright (c) 2019 RoccoDev
+// 
+// This software is released under the MIT License.
+// https://opensource.org/licenses/MIT
+
 use std::ffi::CString;
 use std::os::raw::c_char;
 

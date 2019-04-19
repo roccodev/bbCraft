@@ -1,3 +1,8 @@
+// Copyright (c) 2019 RoccoDev
+// 
+// This software is released under the MIT License.
+// https://opensource.org/licenses/MIT
+
 extern crate bit_utils;
 extern crate byteorder;
 extern crate mc_varint;

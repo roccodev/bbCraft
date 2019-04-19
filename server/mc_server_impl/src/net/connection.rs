@@ -1,3 +1,8 @@
+// Copyright (c) 2019 RoccoDev
+// 
+// This software is released under the MIT License.
+// https://opensource.org/licenses/MIT
+
 use std::net::{TcpStream, Shutdown};
 use std::io::Read;
 use std::fs::read;

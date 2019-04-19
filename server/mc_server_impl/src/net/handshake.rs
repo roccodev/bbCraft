@@ -1,3 +1,8 @@
+// Copyright (c) 2019 RoccoDev
+// 
+// This software is released under the MIT License.
+// https://opensource.org/licenses/MIT
+
 use crate::net::packet::{Packet, PacketHandler};
 use crate::net::connection::{Connection, State};
 
