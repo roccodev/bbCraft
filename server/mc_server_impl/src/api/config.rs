@@ -1,6 +1,7 @@
+use serde_derive::{Serialize, Deserialize};
+
+#[derive(Serialize, Deserialize)]
 pub struct Configuration {
-    jar_path: String,
-    jar_main: String,
-    ip_addr: String,
-    port: u16
+    pub ip_addr: String,
+    pub port: u16
 }

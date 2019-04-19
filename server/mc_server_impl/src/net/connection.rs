@@ -7,6 +7,7 @@ use byteorder::{ReadBytesExt, BigEndian};
 use super::packet::{PacketInfo, Packet};
 use crate::net::handshake::{HandshakePacket, LoginPacket};
 use crate::net::packet::PacketHandler;
+use crate::Server;
 
 #[derive(Debug)]
 pub enum State {
@@ -53,7 +54,8 @@ impl Connection {
                                     HandshakePacket {packet: &packet}.handle(self);
                                 },
                                 State::LOGIN => {
-                                    LoginPacket {packet: &packet}.handle(self);
+                                    LoginPacket {packet: &packet}
+                                        .handle(self);
                                 },
                                 _ => {}
                             }

@@ -4,6 +4,8 @@ use crate::net::connection::{Connection, State};
 use std::io::{Read, Seek, Write};
 use mc_varint::VarIntWrite;
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
+use crate::api::player_connect;
+use std::ffi::{CStr, CString};
 
 pub struct HandshakePacket<'a> {
     pub packet: &'a Packet
@@ -29,7 +31,13 @@ impl<'a> PacketHandler for LoginPacket<'a> {
         let mut player_name = String::new();
         read_slice.read_to_string(&mut player_name);
 
-       // DisconnectPacket::new(String::from("")).packet.write(connection).unwrap();
+        unsafe {
+            let result = player_connect(CString::new(player_name).unwrap().into_raw());
+            let result = CString::from_raw(result);
+            let result = result.to_str().unwrap();
+
+            DisconnectPacket::new(String::from(result)).packet.write(connection).unwrap();
+        }
     }
 }
 
