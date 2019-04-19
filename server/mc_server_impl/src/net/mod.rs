@@ -4,14 +4,12 @@
 // https://opensource.org/licenses/MIT
 
 mod connection;
-mod io;
 mod packet;
 mod handshake;
 
 use std::net::TcpListener;
 use std::thread;
 use crate::Server;
-use std::sync::Arc;
 
 pub fn listen(server: &mut Server) {
     let listener = TcpListener::bind((server.config.ip_addr.as_str(),
@@ -24,7 +22,7 @@ pub fn listen(server: &mut Server) {
                 });
             }
         },
-        Err(err) => panic!(err)
+        Err(err) => crate::api::panic(err)
     }
 
 

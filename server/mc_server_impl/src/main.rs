@@ -25,8 +25,8 @@ impl Server {
         use std::fs::File;
         use std::path::Path;
         use std::io::prelude::*;
-        use std::env;
 
+        // Get the config file
         let cfg_path = Path::new("config.toml");
         let mut cfg_file = File::open(&cfg_path).unwrap();
         let mut config_str = String::new();

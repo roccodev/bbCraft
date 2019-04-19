@@ -4,15 +4,9 @@
 // https://opensource.org/licenses/MIT
 
 use std::net::{TcpStream, Shutdown};
-use std::io::Read;
-use std::fs::read;
-use super::io::read::MinecraftReader;
-use mc_varint::{VarIntRead};
-use byteorder::{ReadBytesExt, BigEndian};
-use super::packet::{PacketInfo, Packet};
+use super::packet::Packet;
 use crate::net::handshake::{HandshakePacket, LoginPacket};
 use crate::net::packet::PacketHandler;
-use crate::Server;
 
 #[derive(Debug)]
 pub enum State {

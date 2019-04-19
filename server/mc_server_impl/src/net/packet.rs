@@ -5,9 +5,7 @@
 
 use std::net::TcpStream;
 use std::io::{Read, Write};
-use std::fs::read;
 use mc_varint::{VarIntRead, VarIntWrite};
-use byteorder::{ReadBytesExt, BigEndian, WriteBytesExt};
 use crate::net::connection::Connection;
 
 pub struct PacketInfo {
@@ -58,7 +56,7 @@ impl Packet {
             stream.write_var_i32(self.info.id)?;
         }
 
-        let mut bytes = &mut self.bytes;
+        let bytes = &mut self.bytes;
         stream.write_all(&*bytes)
     }
 }

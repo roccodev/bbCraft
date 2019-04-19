@@ -6,11 +6,11 @@
 use crate::net::packet::{Packet, PacketHandler};
 use crate::net::connection::{Connection, State};
 
-use std::io::{Read, Seek, Write};
+use std::io::{Read, Write};
 use mc_varint::VarIntWrite;
-use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
+use byteorder::{BigEndian, ReadBytesExt};
 use crate::api::player_connect;
-use std::ffi::{CStr, CString};
+use std::ffi::CString;
 
 pub struct HandshakePacket<'a> {
     pub packet: &'a Packet
