@@ -19,11 +19,11 @@ pub fn listen(server: &mut Server) {
         Ok(listener) => {
             let ptr = Arc::new(listener);
             {
-            let for_cli = ptr.clone();
+                let for_cli = ptr.clone();
             
-            let cli = thread::spawn(move || {
-                crate::cli::accept_user_input(for_cli.as_ref());
-            });
+                let cli = thread::spawn(move || {
+                    crate::cli::accept_user_input(for_cli.as_ref());
+                });
             }
             let listener = ptr.as_ref();
             
@@ -40,7 +40,7 @@ pub fn listen(server: &mut Server) {
 /// Attempts to stop the server.
 pub fn stop(listener: &TcpListener) {
     println!("Stopping server...");
-    crate::api::server_unload();
+    unsafe { crate::api::server_unload(); }
     
     println!("Shutting down TCP listener...");
     drop(listener);
