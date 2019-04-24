@@ -14,6 +14,7 @@ extern crate libc;
 use crate::api::config::Configuration;
 
 pub mod net;
+pub mod cli;
 pub mod api;
 
 pub struct Server {
