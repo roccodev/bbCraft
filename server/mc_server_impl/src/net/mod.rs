@@ -40,8 +40,9 @@ pub fn listen(server: &mut Server) {
 /// Attempts to stop the server.
 pub fn stop(listener: &TcpListener) {
     println!("Stopping server...");
+    crate::api::server_unload();
+    
     println!("Shutting down TCP listener...");
-
     drop(listener);
 
     print!("Exited succesfully.");

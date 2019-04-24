@@ -11,7 +11,7 @@ use std::os::raw::c_char;
 extern {
     pub fn server_load();
     pub fn player_connect(player_name: *mut c_char) -> *mut c_char;
-    fn server_unload();
+    pub fn server_unload();
 }
 
 pub fn panic(reason: std::io::Error) {
