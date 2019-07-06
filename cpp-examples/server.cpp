@@ -14,7 +14,9 @@ extern "C" {
         std::cout << "Server unloaded!" << std::endl;
     }
 
-    char* player_connect(char* player) {
+    char* player_connect(char* uuid, char* name) {
+        // `uuid` == nullptr when the server is in offline mode.
+
         std::cout << "Player " << player << " connected." << std::endl;
         return "Kicked.";
     }
