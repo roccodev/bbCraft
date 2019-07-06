@@ -3,9 +3,12 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use std::net::TcpStream;
 use std::io::{Read, Write};
+use std::net::TcpStream;
+
 use mc_varint::{VarIntRead, VarIntWrite};
+use openssl::symm::Cipher;
+
 use crate::net::connection::Connection;
 
 pub struct PacketInfo {
@@ -45,18 +48,39 @@ impl Packet {
         Packet { info, bytes: data }
     }
 
-    pub fn write(&mut self, connection: &mut Connection) -> Result<(), std::io::Error> {
-        let mut stream = &connection.stream;
-        stream.write_var_i32(self.info.length as i32)?;
+    fn get_bytes(&mut self) -> Result<Vec<u8>, std::io::Error> {
+        let mut bytes = vec![0u8; self.info.length];
+        bytes.write_var_i32(self.info.length as i32)?;
 
         if self.info.id == 0 {
-            stream.write(&[0u8]);
+            bytes.write(&[0u8]);
         }
         else {
-            stream.write_var_i32(self.info.id)?;
+            bytes.write_var_i32(self.info.id)?;
         }
 
-        let bytes = &mut self.bytes;
+        bytes.write_all(&*self.bytes)?;
+
+        Ok(bytes)
+    }
+
+    pub fn write(&mut self, connection: &mut Connection) -> Result<(), std::io::Error> {
+        let mut stream = &connection.stream;
+        let bytes = Packet::get_bytes(self)?;
         stream.write_all(&*bytes)
+    }
+
+    pub fn write_enc(&mut self, connection: &mut Connection, enc_key: Vec<u8>) -> Result<(), std::io::Error> {
+        let cipher = Cipher::aes_128_cfb8();
+        let secret = &enc_key.as_slice()[0..16];
+
+        let bytes = Packet::get_bytes(self)?;
+
+        let encrypt =
+            openssl::symm::encrypt(cipher, secret, Some(secret), bytes.as_slice());
+        let data = encrypt.unwrap();
+
+        let mut stream = &connection.stream;
+        stream.write_all(data.as_slice())
     }
 }

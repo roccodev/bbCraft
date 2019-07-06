@@ -1,21 +1,34 @@
-// Copyright (c) 2019 RoccoDev
-// 
-// This software is released under the MIT License.
-// https://opensource.org/licenses/MIT
-
 extern crate bit_utils;
 extern crate byteorder;
-extern crate mc_varint;
-extern crate toml;
-extern crate serde;
-extern crate serde_derive;
+#[macro_use]
+extern crate lazy_static;
 extern crate libc;
+extern crate mc_varint;
+extern crate num_bigint;
+extern crate openssl;
+extern crate rand;
+extern crate regex;
+extern crate reqwest;
+extern crate rustc_serialize;
+extern crate serde;
+#[macro_use]
+extern crate serde_derive;
+extern crate sha1;
+extern crate toml;
 
 use crate::api::config::Configuration;
+use crate::util::ssl::SslInfo;
 
 pub mod net;
-pub mod cli;
 pub mod api;
+pub mod util;
+pub mod cli;
+
+lazy_static! {
+    static ref KEY: SslInfo = {
+        util::ssl::generate_der_cert()
+    };
+}
 
 pub struct Server {
     pub config: Configuration
@@ -26,8 +39,8 @@ impl Server {
         use std::fs::File;
         use std::path::Path;
         use std::io::prelude::*;
+        use std::env;
 
-        // Get the config file
         let cfg_path = Path::new("config.toml");
         let mut cfg_file = File::open(&cfg_path).unwrap();
         let mut config_str = String::new();
@@ -48,6 +61,7 @@ fn main() {
     }
 
     // Start the server
-    net::listen(&mut server);
+    net::listen(&mut server, &KEY);
 
 }
+

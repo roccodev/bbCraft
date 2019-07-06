@@ -3,14 +3,17 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::net::packet::{Packet, PacketHandler};
-use crate::net::connection::{Connection, State};
-
-use std::io::{Read, Write};
-use mc_varint::VarIntWrite;
-use byteorder::{BigEndian, ReadBytesExt};
-use crate::api::player_connect;
 use std::ffi::CString;
+use std::io::{Read, Write};
+
+use byteorder::{BigEndian, ReadBytesExt};
+use mc_varint::{VarIntRead, VarIntWrite};
+use openssl::symm::Cipher;
+
+use crate::api::player_connect;
+use crate::net::connection::{Connection, State};
+use crate::net::encryption::EncryptionRequestPacket;
+use crate::net::packet::{Packet, PacketHandler};
 
 pub struct HandshakePacket<'a> {
     pub packet: &'a Packet
@@ -34,14 +37,17 @@ impl<'a> PacketHandler for LoginPacket<'a> {
     fn handle(&self, connection: &mut Connection) {
         let mut read_slice = &*(self.packet.bytes);
         let mut player_name = String::new();
+        read_slice.read_var_i32(); // String length, we don't care
         read_slice.read_to_string(&mut player_name);
 
-        unsafe {
-            let result = player_connect(CString::new(player_name).unwrap().into_raw());
-            let result = CString::from_raw(result);
-            let result = result.to_str().unwrap();
+        connection.player.name = player_name.clone();
 
-            DisconnectPacket::new(String::from(result)).packet.write(connection).unwrap();
+        if connection.is_online {
+            EncryptionRequestPacket::new(&connection.key.pub_key, connection.verify_token)
+                .packet.write(connection).unwrap();
+        }
+        else {
+            connection.api_kick(String::new(), player_name);
         }
     }
 }
@@ -51,7 +57,7 @@ pub struct DisconnectPacket {
 }
 
 impl DisconnectPacket {
-    fn new(reason: String) -> DisconnectPacket {
+    pub fn new(reason: String) -> DisconnectPacket {
         let mut data = vec![];
         let str_bytes = reason.as_bytes();
         let size = data.write_var_i32(str_bytes.len() as i32);

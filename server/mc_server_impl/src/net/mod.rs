@@ -3,18 +3,24 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+use std::net::TcpListener;
+use std::sync::Arc;
+use std::thread;
+
+use crate::Server;
+use crate::util::ssl::SslInfo;
+
 mod connection;
 mod packet;
 mod handshake;
+mod encryption;
 
-use std::net::TcpListener;
-use std::thread;
-use std::sync::Arc;
-use crate::Server;
-
-pub fn listen(server: &mut Server) {
+pub fn listen(server: &mut Server, cert: &'static SslInfo) {
     let listener = TcpListener::bind((server.config.ip_addr.as_str(),
                                       server.config.port));
+
+    let online = server.config.online_mode;
+
     match listener {
         Ok(listener) => {
             let ptr = Arc::new(listener);
@@ -29,7 +35,7 @@ pub fn listen(server: &mut Server) {
             
             for stream in listener.incoming() {
                 thread::spawn(move || {
-                    connection::Connection::new(stream.unwrap()).listen();
+                    connection::Connection::new(stream.unwrap(), cert, online).listen();
                 });
             }
         },

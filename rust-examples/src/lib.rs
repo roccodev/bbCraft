@@ -17,7 +17,8 @@ extern "C" fn server_unload() {
 }
 
 #[no_mangle]
-extern "C" fn player_connect(player: *mut c_char) -> *mut c_char {
+extern "C" fn player_connect(uuid: *mut c_char, player: *mut c_char) -> *mut c_char {
+	// `uuid` == ptr::null_mut() when the server is in offline mode.
     unsafe {
         let player = CString::from_raw(player);
         let player = player.to_str().unwrap();
